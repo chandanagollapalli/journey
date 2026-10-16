@@ -1,0 +1,68 @@
+import java.util.*;
+import java.lang.*;
+import java.io.*;
+
+class Codechef {
+    public static void main(String[] args) throws java.lang.Exception {
+        Scanner scanner = new Scanner(System.in);
+        if (!scanner.hasNextInt()) return;
+        
+        int t = scanner.nextInt();
+        while (t-- > 0) {
+            int n = scanner.nextInt();
+            long x = scanner.nextLong();
+            long[] a = new long[n];
+            for (int i = 0; i < n; i++) {
+                a[i] = scanner.nextLong();
+            }
+            
+            // Sort the array to facilitate the two-pointer approach and avoid duplicates
+            Arrays.sort(a);
+            
+            // Use a LinkedHashSet to maintain unique quadruples in insertion (lexicographical) order
+            Set<String> uniqueQuadruples = new LinkedHashSet<>();
+            List<long[]> resultList = new ArrayList<>();
+            
+            for (int i = 0; i < n - 3; i++) {
+                if (i > 0 && a[i] == a[i - 1]) continue;
+                
+                for (int j = i + 1; j < n - 2; j++) {
+                    if (j > i + 1 && a[j] == a[j - 1]) continue;
+                    
+                    int left = j + 1;
+                    int right = n - 1;
+                    
+                    while (left < right) {
+                        long sum = a[i] + a[j] + a[left] + a[right];
+                        
+                        if (sum == x) {
+                            long[] quad = new long[]{a[i], a[j], a[left], a[right]};
+                            String key = a[i] + "," + a[j] + "," + a[left] + "," + a[right];
+                            
+                            if (uniqueQuadruples.add(key)) {
+                                resultList.add(quad);
+                            }
+                            
+                            left++;
+                            right--;
+                            
+                            while (left < right && a[left] == a[left - 1]) left++;
+                            while (left < right && a[right] == a[right + 1]) right--;
+                        } else if (sum < x) {
+                            left++;
+                        } else {
+                            right--;
+                        }
+                    }
+                }
+            }
+            
+            // Output format: M followed by M lines of quadruples
+            System.out.println(resultList.size());
+            for (long[] quad : resultList) {
+                System.out.println(quad[0] + " " + quad[1] + " " + quad[2] + " " + quad[3]);
+            }
+        }
+        scanner.close();
+    }
+}
